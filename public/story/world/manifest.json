@@ -1,0 +1,7 @@
+{
+  "settings": {
+    "coordinate_system": "threejs",
+    "start_room": "tienda"
+  },
+  "rooms": ["tienda", "salon", "cocina"]
+}

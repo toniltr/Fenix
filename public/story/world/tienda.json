@@ -1,0 +1,17 @@
+{
+  "id": "tienda",
+  "theme": { "name": "Tienda", "floor": "#3a2e26", "background": "#1a140e" },
+  "markers": [
+    { "id": "entrada", "position": [0, 0, 3] },
+    { "id": "puerta_tienda", "position": [2, 0, 0] },
+    { "id": "ronda_a", "position": [-3, 0, -2] },
+    { "id": "ronda_b", "position": [-3, 0, 2] }
+  ],
+  "doors": [
+    { "id": "puerta_principal", "position": [2, 0, 0], "ink_node": "entrada_tienda", "leads_to": "salon" }
+  ],
+  "npcs": [
+    { "id": "tendero", "position": [-3, 0, -2], "patrol": ["ronda_a", "ronda_b"] }
+  ],
+  "pickups": []
+}

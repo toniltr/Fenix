@@ -1,0 +1,6 @@
+node_modules
+dist
+_raw
+public/story/fenix.ink.json
+*.log
+.DS_Store

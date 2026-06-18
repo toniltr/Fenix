@@ -1,0 +1,16 @@
+{
+  "id": "cocina",
+  "theme": { "name": "Cocina", "floor": "#2e3a22", "background": "#141e0e" },
+  "markers": [
+    { "id": "entrada", "position": [0, 0, 3] },
+    { "id": "mama_a", "position": [1, 0, -2] },
+    { "id": "mama_b", "position": [-1, 0, -1] }
+  ],
+  "doors": [
+    { "id": "paso_salon", "position": [-2, 0, 2], "leads_to": "salon" }
+  ],
+  "npcs": [
+    { "id": "mama", "position": [1, 0, -2] }
+  ],
+  "pickups": []
+}

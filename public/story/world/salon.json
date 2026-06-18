@@ -1,0 +1,13 @@
+{
+  "id": "salon",
+  "theme": { "name": "Salón", "floor": "#22303a", "background": "#0e161c" },
+  "markers": [
+    { "id": "entrada", "position": [0, 0, 3] }
+  ],
+  "doors": [
+    { "id": "paso_tienda", "position": [2, 0, 2], "leads_to": "tienda" },
+    { "id": "paso_cocina", "position": [-2, 0, 2], "leads_to": "cocina" }
+  ],
+  "npcs": [],
+  "pickups": []
+}
