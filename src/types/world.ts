@@ -45,6 +45,7 @@ export const RoomSchema = z.object({
   doors: z.array(DoorSchema).default([]),
   npcs: z.array(NpcSchema).default([]),
   pickups: z.array(PickupSchema).default([]),
+  model: z.string().optional(), // path al glb de la sala (opcional)
 });
 
 export const ManifestSchema = z.object({

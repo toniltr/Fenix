@@ -1,6 +1,7 @@
 // ── Fenix · historia raíz ───────────────────────────────────────────
 // La lógica narrativa vive AQUÍ. El JSON sólo dice dónde está cada cosa.
 
+VAR hora = 7
 VAR hambre = 100
 VAR deuda  = 50
 VAR bronca = false

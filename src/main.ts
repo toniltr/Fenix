@@ -36,6 +36,8 @@ async function boot(): Promise<void> {
   // 2. Motor + render.
   const engine = new Engine(physics);
 
+  const assetLoader = new AssetLoader();
+
   // 3. Jugador: PERSISTENTE (sobrevive al cambio de sala).
   const playerMesh = AssetLoader.placeholder(0x378add);
   const player = new Player(playerMesh);
@@ -48,7 +50,7 @@ async function boot(): Promise<void> {
   const npcs = new Map<string, NPC>();
 
   // 5. Controlador de salas (viaje + construcción).
-  const rooms = new RoomController(engine, player, worldState, markers, npcs);
+  const rooms = new RoomController(engine, player, worldState, assetLoader, markers, npcs);
 
   // 6. ink + UI + interacción (la interacción necesita 'rooms' para el portero).
   const inkJson = await loadInkJson();
@@ -57,11 +59,13 @@ async function boot(): Promise<void> {
   const interaction = new InteractionManager(runner, ui, rooms);
 
   // 7. Bridge: external functions de mundo + observadores.
-  new InkBridge(runner, { player, npcs, markers, hud }).bindAll();
+  new InkBridge(runner, { player, npcs, markers, hud, engine }).bindAll();
   hud.setHambre(runner.get("hambre"));
   hud.setDeuda(runner.get("deuda"));
   hud.setAnimo(runner.get("animo"));
 
+
+  engine.lighting.setHourLighting(16);
   // 8. Tick de hambre: lo gobierna NUESTRO loop, no ink (ink no tiene reloj).
   let acc = 0;
   engine.addUpdatable({

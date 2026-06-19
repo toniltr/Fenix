@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Clock } from "./Clock.js";
 import { SceneManager } from "./SceneManager.js";
 import { InputManager } from "./InputManager.js";
+import { LightingManager } from "./LightingManager.js";
 import type { Physics } from "./Physics.js";
 import type { Updatable } from "./SceneManager.js";
 import type { Theme } from "@/types/world.js";
@@ -16,11 +17,10 @@ export class Engine {
   clock = new Clock();
   scenes: SceneManager;
   input: InputManager;
+  lighting: LightingManager;
 
   private ground!: THREE.Mesh;
-  // persistentes: sobreviven al cambio de sala (jugador, ticker de hambre)
   private persistent: Updatable[] = [];
-  // de sala: se vacían al viajar (NPCs de la sala)
   private roomUpdatables: Updatable[] = [];
 
   constructor(private physics?: Physics) {
@@ -33,7 +33,10 @@ export class Engine {
     this.scene.background = new THREE.Color(0x14141a);
 
     this.camera = new THREE.PerspectiveCamera(
-      55, window.innerWidth / window.innerHeight, 0.1, 100,
+      55,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100,
     );
     this.camera.position.set(4, 4, 6);
 
@@ -51,17 +54,10 @@ export class Engine {
     this.scenes = new SceneManager(this.scene);
     this.input = new InputManager(this.renderer.domElement, this.camera);
 
-    this.setupLights();
+    this.lighting = new LightingManager(this.scene, this.renderer);
     this.setupGround();
 
     window.addEventListener("resize", () => this.onResize());
-  }
-
-  private setupLights(): void {
-    this.scene.add(new THREE.HemisphereLight(0xddeeff, 0x223344, 0.6));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-    sun.position.set(5, 8, 4);
-    this.scene.add(sun);
   }
 
   private setupGround(): void {
@@ -70,15 +66,15 @@ export class Engine {
       new THREE.MeshStandardMaterial({ color: 0x2a2a32 }),
     );
     this.ground.rotation.x = -Math.PI / 2;
-    this.scene.add(this.ground);
+    //this.scene.add(this.ground);
     const grid = new THREE.GridHelper(40, 40, 0x444455, 0x33333a);
-    this.scene.add(grid);
+    //this.scene.add(grid);
   }
 
   /** aplica el tema visual de la sala (suelo + fondo): el diferenciador de un vistazo */
   setTheme(theme: Theme): void {
-    (this.ground.material as THREE.MeshStandardMaterial).color.set(theme.floor);
-    (this.scene.background as THREE.Color).set(theme.background);
+    //(this.ground.material as THREE.MeshStandardMaterial).color.set(theme.floor);
+   // (this.scene.background as THREE.Color).set(theme.background);
   }
 
   /** objeto persistente (no se borra al viajar de sala) */

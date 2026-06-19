@@ -15,6 +15,7 @@ export class InkBridge {
       npcs: Map<string, NPC>;
       markers: Map<string, Marker>;
       hud: { setHambre(v: number): void; setDeuda(v: number): void; setAnimo(v: Animo): void };
+      engine: { setHourLighting(v: number): void };
     },
   ) {}
 
@@ -30,7 +31,7 @@ export class InkBridge {
 
     // ink: ~ set_npc_estado("tendero", "interceptar")
     this.runner.bindExternal("set_npc_estado", (npcId: string, estado: NpcStateName) => {
-      npcs.get(npcId)?.routine.setState(estado);
+      npcs.get(npcId)?.routine?.setState(estado);
     });
 
     // ink: ~ dar_pickup("espada")
@@ -41,5 +42,8 @@ export class InkBridge {
     this.runner.observe("hambre", (_n, v) => this.deps.hud.setHambre(v as number));
     this.runner.observe("deuda", (_n, v) => this.deps.hud.setDeuda(v as number));
     this.runner.observe("animo", (_n, v) => this.deps.hud.setAnimo(v as Animo));
+
+    // la hora vive en ink; su reflejo en la luz es nuestro
+    //this.runner.observe("hora", (_n, v) => this.deps.engine.setHourLighting(v as number));
   }
 }

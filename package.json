@@ -19,6 +19,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@gltf-transform/cli": "^4.4.0",
     "@types/three": "^0.169.0",
     "chokidar-cli": "^3.0.0",
     "typescript": "^5.6.0",

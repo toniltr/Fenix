@@ -1,5 +1,6 @@
 {
   "id": "tienda",
+  "model": "/models/tienda.glb",
   "theme": { "name": "Tienda", "floor": "#3a2e26", "background": "#1a140e" },
   "markers": [
     { "id": "entrada", "position": [0, 0, 3] },

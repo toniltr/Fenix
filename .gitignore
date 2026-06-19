@@ -1,6 +1,7 @@
 node_modules
 dist
 _raw
+public/models
 public/story/fenix.ink.json
 *.log
 .DS_Store
