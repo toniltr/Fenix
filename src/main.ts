@@ -22,6 +22,7 @@ const hud = {
   setHambre: (v: number) => (document.getElementById("hud-hambre")!.textContent = String(Math.round(v))),
   setDeuda: (v: number) => (document.getElementById("hud-deuda")!.textContent = String(v)),
   setAnimo: (v: Animo) => (document.getElementById("hud-animo")!.textContent = String(v)),
+  setHora: (v: number) => (document.getElementById("hud-hora")!.textContent = String(Math.floor(v)).padStart(2, "0") + "h"),
 };
 
 async function boot(): Promise<void> {
@@ -36,7 +37,7 @@ async function boot(): Promise<void> {
   // 2. Motor + render.
   const engine = new Engine(physics);
 
-  const assetLoader = new AssetLoader();
+  const assetLoader = new AssetLoader(engine.renderer);
 
   // 3. Jugador: PERSISTENTE (sobrevive al cambio de sala).
   const playerMesh = AssetLoader.placeholder(0x378add);
@@ -63,20 +64,10 @@ async function boot(): Promise<void> {
   hud.setHambre(runner.get("hambre"));
   hud.setDeuda(runner.get("deuda"));
   hud.setAnimo(runner.get("animo"));
+  hud.setHora(runner.get("hora"));
 
+  engine.lighting.setHourLighting(runner.get("hora"));
 
-  engine.lighting.setHourLighting(16);
-  // 8. Tick de hambre: lo gobierna NUESTRO loop, no ink (ink no tiene reloj).
-  let acc = 0;
-  engine.addUpdatable({
-    update: (dt) => {
-      acc += dt;
-      if (acc >= 3) {
-        acc = 0;
-        runner.set("hambre", Math.max(0, runner.get("hambre") - 1));
-      }
-    },
-  });
 
   // 9. Handler de clic (una vez; los targets cambian por sala).
   engine.input.setPickHandler((obj) => {
@@ -87,7 +78,7 @@ async function boot(): Promise<void> {
   // 10. Entrar en la sala inicial y arrancar el loop.
   const manifest = await loadManifest();
   await rooms.travelTo(manifest.settings.start_room);
-  engine.start();
+  await engine.start();
 
   console.log("Fenix arrancado. La puerta ámbar es paso al salón, con el tendero de portero.");
 }

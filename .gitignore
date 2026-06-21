@@ -5,3 +5,9 @@ public/models
 public/story/fenix.ink.json
 *.log
 .DS_Store
+*.txt
+_logs
+package-lock.json
+logs/LVL_salon.md
+public/basis/basis_transcoder.js
+public/basis/basis_transcoder.wasm

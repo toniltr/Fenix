@@ -4,9 +4,9 @@ import { Clock } from "./Clock.js";
 import { SceneManager } from "./SceneManager.js";
 import { InputManager } from "./InputManager.js";
 import { LightingManager } from "./LightingManager.js";
+import { AssetLoader } from "./AssetLoader.js";
 import type { Physics } from "./Physics.js";
 import type { Updatable } from "./SceneManager.js";
-import type { Theme } from "@/types/world.js";
 
 // Orquestador: dueño del render loop y del dt.
 export class Engine {
@@ -19,16 +19,18 @@ export class Engine {
   input: InputManager;
   lighting: LightingManager;
 
-  private ground!: THREE.Mesh;
-  private persistent: Updatable[] = [];
+  private readonly assets: AssetLoader;
+  private readonly persistent: Updatable[] = [];
   private roomUpdatables: Updatable[] = [];
 
-  constructor(private physics?: Physics) {
+  constructor(private readonly physics?: Physics) {
     const app = document.getElementById("app")!;
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     app.appendChild(this.renderer.domElement);
+
+    this.assets = new AssetLoader(this.renderer);
 
     this.scene.background = new THREE.Color(0x14141a);
 
@@ -43,38 +45,27 @@ export class Engine {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.set(0, 1, 0);
     this.controls.mouseButtons = {
-      LEFT: null as unknown as THREE.MOUSE,
+      LEFT: null,
       MIDDLE: THREE.MOUSE.DOLLY,
       RIGHT: THREE.MOUSE.ROTATE,
     };
     this.controls.minPolarAngle = 0.2;
     this.controls.maxPolarAngle = Math.PI / 2.1;
+    this.controls.minDistance = 8;
+    this.controls.maxDistance = 17;
     this.controls.update();
 
     this.scenes = new SceneManager(this.scene);
     this.input = new InputManager(this.renderer.domElement, this.camera);
 
     this.lighting = new LightingManager(this.scene, this.renderer);
-    this.setupGround();
 
     window.addEventListener("resize", () => this.onResize());
   }
 
-  private setupGround(): void {
-    this.ground = new THREE.Mesh(
-      new THREE.PlaneGeometry(40, 40),
-      new THREE.MeshStandardMaterial({ color: 0x2a2a32 }),
-    );
-    this.ground.rotation.x = -Math.PI / 2;
-    //this.scene.add(this.ground);
-    const grid = new THREE.GridHelper(40, 40, 0x444455, 0x33333a);
-    //this.scene.add(grid);
-  }
-
-  /** aplica el tema visual de la sala (suelo + fondo): el diferenciador de un vistazo */
-  setTheme(theme: Theme): void {
-    //(this.ground.material as THREE.MeshStandardMaterial).color.set(theme.floor);
-   // (this.scene.background as THREE.Color).set(theme.background);
+  private async setupGround(): Promise<void> {
+    const gltf = await this.assets.load("/models/ground.glb");
+    this.scene.add(gltf.scene);
   }
 
   /** objeto persistente (no se borra al viajar de sala) */
@@ -91,7 +82,8 @@ export class Engine {
     this.roomUpdatables = [];
   }
 
-  start(): void {
+  async start(): Promise<void> {
+    await this.setupGround();
     const loop = () => {
       requestAnimationFrame(loop);
       const dt = this.clock.tick();
@@ -102,6 +94,16 @@ export class Engine {
       this.renderer.render(this.scene, this.camera);
     };
     loop();
+  }
+
+  resetCameraToFar(): void {
+    const dir = new THREE.Vector3()
+      .subVectors(this.camera.position, this.controls.target)
+      .normalize();
+    this.camera.position.copy(
+      this.controls.target.clone().addScaledVector(dir, this.controls.maxDistance),
+    );
+    this.controls.update();
   }
 
   private onResize(): void {

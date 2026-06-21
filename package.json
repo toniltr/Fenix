@@ -4,13 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -n vite,assets -c blue,green \"vite\" \"node scripts/compress-watch.mjs\"",
     "build": "npm run compile:ink && tsc --noEmit && vite build",
     "preview": "vite preview",
     "compile:ink": "node scripts/compile_ink.mjs",
     "validate": "python3 scripts/validate_world.py",
     "typecheck": "tsc --noEmit",
-    "watch:ink": "chokidar \"ink/**/*.ink\" -c \"npm run compile:ink\""
+    "watch:ink": "chokidar \"ink/**/*.ink\" -c \"npm run compile:ink\"",
+    "watch:models": "node scripts/compress-watch.mjs",
+    "build:models": "node scripts/compress-watch.mjs --once"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.14.0",
@@ -20,8 +22,12 @@
   },
   "devDependencies": {
     "@gltf-transform/cli": "^4.4.0",
+    "@gltf-transform/core": "^4.4.0",
+    "@gltf-transform/extensions": "^4.4.0",
     "@types/three": "^0.169.0",
+    "chokidar": "^5.0.0",
     "chokidar-cli": "^3.0.0",
+    "concurrently": "^10.0.3",
     "typescript": "^5.6.0",
     "vite": "^5.4.0"
   }

@@ -138,6 +138,7 @@ export class RoomController {
     // 8. actualizar los targets de clic a los de esta sala
     this.engine.input.setPickTargets([...this.byMesh.keys()]);
 
+    this.engine.resetCameraToFar();
     await LoadingScreen.hide();
   }
 }

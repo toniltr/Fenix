@@ -1,12 +1,29 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 
-// Carga de GLTF ya optimizados (--no-prune para mallas con esqueleto).
-// En el scaffold no hay assets reales; este loader queda listo para tus mallas.
+// Carga de GLB optimizados con el pipeline de Fenix:
+//   - KHR_texture_basisu (KTX2) -> KTX2Loader
+//   - EXT_meshopt_compression   -> MeshoptDecoder
+//   - KHR_mesh_quantization     -> nativo, sin decoder
 export class AssetLoader {
-  private gltf = new GLTFLoader();
-  private cache = new Map<string, GLTF>();
+  private readonly gltf: GLTFLoader;
+  private readonly ktx2: KTX2Loader;
+  private readonly cache = new Map<string, GLTF>();
+
+  constructor(renderer: THREE.WebGLRenderer) {
+    this.ktx2 = new KTX2Loader()
+      // los .wasm/.js del transcoder Basis; cópialos a public/basis/ (ver nota abajo)
+      .setTranscoderPath("/basis/")
+      // OBLIGATORIO: KTX2 necesita saber qué formatos GPU soporta el dispositivo
+      .detectSupport(renderer);
+
+    this.gltf = new GLTFLoader()
+      .setKTX2Loader(this.ktx2)
+      .setMeshoptDecoder(MeshoptDecoder);
+  }
 
   async load(url: string): Promise<GLTF> {
     const cached = this.cache.get(url);

@@ -1,6 +1,7 @@
 {
   "id": "salon",
   "theme": { "name": "Salón", "floor": "#22303a", "background": "#0e161c" },
+  "model": "/models/LVL_salon.glb",
   "markers": [
     { "id": "entrada", "position": [0, 0, 3] }
   ],

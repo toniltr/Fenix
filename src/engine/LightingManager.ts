@@ -5,14 +5,16 @@ export class LightingManager {
   private readonly hemi: THREE.HemisphereLight;
   private readonly sun: THREE.DirectionalLight;
   private readonly sky: Sky;
+  private readonly pmrem: THREE.PMREMGenerator;
+  private envRT?: THREE.WebGLRenderTarget;
 
   constructor(
     private readonly scene: THREE.Scene,
     renderer: THREE.WebGLRenderer,
   ) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.5;
-
+    renderer.toneMappingExposure = 1;
+    this.pmrem = new THREE.PMREMGenerator(renderer); // guarda como campo privado
     this.sky = this.createSky();
     this.hemi = this.createHemi();
     this.sun = this.createSun();
@@ -66,5 +68,9 @@ export class LightingManager {
     const sky = new THREE.Color(0xddeeff);
     this.hemi.color.copy(night.clone().lerp(sky, dayFactor));
     this.hemi.intensity = 0.15 + dayFactor * 0.6;
+
+    this.envRT?.dispose();
+    this.envRT = this.pmrem.fromScene(this.sky as unknown as THREE.Scene);
+    this.scene.environment = this.envRT.texture;
   }
 }
